@@ -1,6 +1,6 @@
 # driftwm-config
 
-Мой личный конфиг для оконного менеджера [**driftwm**](https://github.com/driftwm/driftwm)
+Мой личный конфиг для оконного менеджера [**driftwm**](https://github.com/malbiruk/driftwm)
 (trackpad-first infinite-canvas Wayland-компоновщик на Rust) + скрипт автоматической установки.
 
 > Это **не** сам компоновщик, а только пользовательская конфигурация поверх него.
@@ -45,6 +45,6 @@ sway-audio-idle-inhibit brightnessctl
 
 ## Лицензия / атрибуция
 
-Содержимое `extras/` происходит из проекта [driftwm](https://github.com/driftwm/driftwm).
+Содержимое `extras/` происходит из проекта [driftwm](https://github.com/malbiruk/driftwm).
 Все права на сам driftwm принадлежат его авторам. Этот репозиторий —
 производная конфигурация для личного использования.

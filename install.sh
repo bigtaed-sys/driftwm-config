@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Автоматическая установка конфига driftwm (починенный райс автора).
+# Automatic installer for the driftwm config (fixed personal rice).
 #
-# Использование:
-#   ./install.sh            установить конфиг + extras в ~/.config/driftwm
-#   ./install.sh --check    дополнительно прогнать `driftwm --check-config`
+# Usage:
+#   ./install.sh            install config + extras into ~/.config/driftwm
+#   ./install.sh --check    also run `driftwm --check-config`
 #
-# Существующий config.toml не затирается молча — делается резервная копия
-# config.toml.bak-<дата>.
+# An existing config.toml is never overwritten silently: a backup
+# config.toml.bak-<date> is made first.
 
 set -euo pipefail
 
@@ -21,58 +21,58 @@ for arg in "$@"; do
             sed -n '2,9p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
             exit 0
             ;;
-        *) echo "Неизвестный аргумент: $arg" >&2; exit 1 ;;
+        *) echo "Unknown argument: $arg" >&2; exit 1 ;;
     esac
 done
 
 if [[ ! -d "$SRC_DIR/extras" ]]; then
-    echo "Ошибка: рядом со скриптом нет папки extras/ (запускай из корня репозитория)." >&2
+    echo "Error: no extras/ folder next to the script (run from the repo root)." >&2
     exit 1
 fi
 
 if [[ ! -f "$SRC_DIR/config.fixed.toml" ]]; then
-    echo "Ошибка: не найден config.fixed.toml рядом со скриптом." >&2
+    echo "Error: config.fixed.toml not found next to the script." >&2
     exit 1
 fi
 
-echo "==> Цель: $CONFIG_DIR"
+echo "==> Target: $CONFIG_DIR"
 mkdir -p "$CONFIG_DIR"
 
-echo "==> Копирую extras -> $CONFIG_DIR/extras"
+echo "==> Copying extras -> $CONFIG_DIR/extras"
 rm -rf "$CONFIG_DIR/extras"
 cp -r "$SRC_DIR/extras" "$CONFIG_DIR/extras"
 
 if [[ -f "$CONFIG_DIR/config.toml" ]]; then
     backup="$CONFIG_DIR/config.toml.bak-$(date +%Y%m%d-%H%M%S)"
-    echo "==> Найден существующий config.toml, сохраняю в $backup"
+    echo "==> Existing config.toml found, backing up to $backup"
     cp "$CONFIG_DIR/config.toml" "$backup"
 fi
 
-echo "==> Копирую config.fixed.toml -> $CONFIG_DIR/config.toml"
+echo "==> Copying config.fixed.toml -> $CONFIG_DIR/config.toml"
 cp "$SRC_DIR/config.fixed.toml" "$CONFIG_DIR/config.toml"
 
-echo "==> Делаю скрипты исполняемыми"
+echo "==> Making scripts executable"
 chmod +x "$CONFIG_DIR"/extras/scripts/*.sh 2>/dev/null || true
 chmod +x "$CONFIG_DIR"/extras/widgets/launch.sh 2>/dev/null || true
 
-echo "==> Готово."
+echo "==> Done."
 
 if [[ "$RUN_CHECK" -eq 1 ]]; then
     if command -v driftwm >/dev/null 2>&1; then
         echo "==> driftwm --check-config"
         driftwm --check-config
     else
-        echo "!! driftwm не найден в PATH — пропускаю --check-config." >&2
+        echo "!! driftwm not found in PATH - skipping --check-config." >&2
     fi
 fi
 
 cat <<'EOF'
 
-Дальше:
-  - Доставь внешние программы, если используешь их (autostart/биндинги):
+Next steps:
+  - Install the external programs you use (autostart / keybindings):
       waybar swaync fuzzel alacritty swayosd swayidle
       sway-audio-idle-inhibit brightnessctl
-    плюс тему курсора "elementary".
-  - Виджеты drift-* требуют python/uv (extras/widgets/launch.sh).
-  - Не нужное — закомментируй в ~/.config/driftwm/config.toml.
+    plus the "elementary" cursor theme.
+  - The drift-* widgets need python/uv (extras/widgets/launch.sh).
+  - Comment out anything you do not need in ~/.config/driftwm/config.toml.
 EOF
