@@ -1,0 +1,183 @@
+# driftwm — починенная версия extras/config.toml
+#
+# Установка:
+#   1) Скопируй ВСЮ папку extras в ~/.config/driftwm/extras/
+#        cp -r extras ~/.config/driftwm/extras
+#   2) Скопируй этот файл в ~/.config/driftwm/config.toml
+#        cp config.fixed.toml ~/.config/driftwm/config.toml
+#   3) Сделай скрипты исполняемыми:
+#        chmod +x ~/.config/driftwm/extras/scripts/*.sh ~/.config/driftwm/extras/widgets/launch.sh
+#   4) Проверь конфиг:  driftwm --check-config
+#
+# Что было исправлено относительно extras/config.toml:
+#   - убран блок [[outputs]] с transform="90" (переворачивал экран на 90°)
+#   - пути ~/Documents/work/scripts/driftwm/... -> ~/.config/driftwm/...
+#   - путь к обоям /usr/local/share/... -> ~/.config/driftwm/extras/wallpapers/...
+#   - терминал ptyxis -> alacritty (его конфиг есть в extras/alacritty)
+#   - убрана строка gnome-keyring/PAM (специфична для машины автора)
+#
+# ВНИМАНИЕ: autostart и часть биндингов запускают внешние программы. Их надо
+# доустановить из репозиториев твоего дистрибутива (или закомментировать):
+#   waybar, swaync, fuzzel, alacritty, swayosd, swayidle,
+#   sway-audio-idle-inhibit, brightnessctl, swaync-client, swayosd-client.
+# Тема курсора "elementary" и шрифты тоже должны быть установлены.
+
+autostart = [
+    "/usr/libexec/polkit-gnome-authentication-agent-1",
+    "swayosd-server --top-margin 0.95",
+    "swaync",
+    "waybar -c ~/.config/waybar/taskbar.jsonc -s ~/.config/waybar/taskbar.css",
+    "sleep 1 && waybar -c ~/.config/waybar/tray.jsonc -s ~/.config/waybar/tray.css",
+    "~/.config/driftwm/extras/widgets/launch.sh",
+    "~/.config/driftwm/extras/scripts/battery_notify.sh",
+    "~/.config/driftwm/extras/scripts/theme-watch.sh",
+    "swayidle -w timeout 300 'brightnessctl -s set 10%' resume 'brightnessctl -r' timeout 330 '~/.config/driftwm/extras/scripts/lock.sh' timeout 600 'systemctl suspend' before-sleep '~/.config/driftwm/extras/scripts/lock.sh'",
+    "sway-audio-idle-inhibit",
+]
+
+focus_follows_mouse = true
+window_placement = "auto"
+
+[env]
+QT_QPA_PLATFORMTHEME = "qt6ct"
+
+[snap]
+same_edge = true
+edge_center = true
+
+[input.keyboard]
+layout = "us,ru"
+options = "grp:caps_toggle,grp_led:caps,altwin:ctrl_alt_win"
+
+[zoom]
+reset_on_new_window = false
+
+[cursor]
+theme = "elementary"
+
+[decorations]
+bg_color = "#FDF6E3"
+fg_color = "#5C6A72"
+
+[background]
+type = "shader"
+path = "~/.config/driftwm/extras/wallpapers/static/pink_cloud.glsl"
+
+[output.outline]
+color = "#FDF6E3"
+
+[mouse]
+decoration_resize_snapped = true
+decoration_fit_snapped = true
+
+[keybindings]
+"mod+return" = "exec alacritty"
+"mod+d" = "exec fuzzel"
+"mod+shift+d" = "spawn ~/.config/driftwm/extras/scripts/theme-toggle.sh"
+"mod+l" = "spawn ~/.config/driftwm/extras/scripts/lock.sh"
+"mod+n" = "spawn swaync-client -t"
+# swayosd вместо дефолтных wpctl/brightnessctl
+"XF86AudioRaiseVolume" = "spawn swayosd-client --output-volume raise"
+"XF86AudioLowerVolume" = "spawn swayosd-client --output-volume lower"
+"XF86AudioMute" = "spawn swayosd-client --output-volume mute-toggle"
+"XF86MonBrightnessUp" = "spawn swayosd-client --brightness raise"
+"XF86MonBrightnessDown" = "spawn swayosd-client --brightness lower"
+"mod+s" = "exec ~/.config/driftwm/extras/scripts/window-search.sh"
+"mod+m" = "fit-window-snapped"
+"mod+shift+m" = "fit-window"
+
+[gestures.on-window]
+"alt+3-finger-swipe" = "resize-window-snapped"
+"alt+shift+3-finger-swipe" = "resize-window"
+
+[effects]
+blur_radius = 3
+
+# Виджеты-дашборд — позиции вокруг начала координат (под 1920x1080).
+# Запускаются через extras/widgets/launch.sh (нужен python/uv).
+
+[[window_rules]]
+app_id = "drift-*"
+widget = true
+decoration = "none"
+
+[[window_rules]]
+app_id = "drift-clock"
+position = [-93, 205]
+
+[[window_rules]]
+app_id = "drift-stats"
+position = [-93, 0]
+
+[[window_rules]]
+app_id = "drift-canvas"
+position = [-129, -185]
+
+[[window_rules]]
+app_id = "drift-layout"
+position = [42, -185]
+
+[[window_rules]]
+app_id = "drift-calendar"
+position = [186, 0]
+
+[[window_rules]]
+app_id = "drift-weather"
+position = [186, 205]
+
+[[window_rules]]
+app_id = "drift-notif"
+position = [190, -185]
+
+[[window_rules]]
+app_id = "drift-power"
+position = [274, -259]
+
+[[window_rules]]
+app_id = "drift-power-menu"
+position = [274, -370]
+decoration = "server"
+
+# Waybar: layer-shell сопоставляется по порядку (N-й экземпляр -> N-е правило
+# с `position`), поэтому правила держим раздельными.
+[[window_rules]]
+app_id = "waybar"
+position = [-289, 21]
+widget = true
+decoration = "none"
+
+[[window_rules]]
+app_id = "waybar"
+position = [126, -259]
+widget = true
+decoration = "none"
+
+[[window_rules]]
+title = "winit window"
+widget = true
+
+[[window_rules]]
+app_id = "com.system76.CosmicSettings"
+size = [500, 725]
+
+[[window_rules]]
+app_id = "org.telegram.desktop"
+decoration = "server"
+blur = true
+
+[[window_rules]]
+app_id = "swaync-control-center"
+blur = true
+
+[[window_rules]]
+app_id = "swaync-notification-window"
+blur = true
+
+[[window_rules]]
+app_id = "launcher"
+blur = true
+
+[[window_rules]]
+app_id = "Alacritty"
+opacity = 0.8
+blur = true
