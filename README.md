@@ -53,6 +53,21 @@ sway-audio-idle-inhibit brightnessctl swaylock grim ffmpeg wlr-randr
 Упавший `autostart` или битый биндинг не роняют сам компоновщик — driftwm
 продолжит работать.
 
+## Блокировка и сон (swaylock + PAM)
+
+`mod+l` и пробуждение из сна запускают **swaylock**. Если у swaylock нет
+PAM-файла `/etc/pam.d/swaylock`, он **отвергает любой пароль** (кольцо мигает,
+но не разблокирует) — после сна окажешься заперт. `install.sh` создаёт этот
+файл автоматически. Вручную:
+
+```bash
+if [ -f /etc/pam.d/system-auth ]; then base=system-auth; else base=common-auth; fi
+echo "auth include $base" | sudo tee /etc/pam.d/swaylock
+```
+
+Проверяй разблокировку, запустив `swaylock` в терминале (не блокируясь насовсем):
+если пароль не принимается — переключись на TTY (`Ctrl+Alt+F3`) и `pkill swaylock`.
+
 ## Шрифты и иконки
 
 - **Иконки в виджетах** (`drift-*`) — это глифы **Nerd Font**. Без него вместо

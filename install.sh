@@ -102,6 +102,26 @@ install_packages() {
     done
 }
 
+# swaylock authenticates via PAM. Without /etc/pam.d/swaylock it rejects every
+# password (the unlock ring lights up but never accepts) - so resume-from-sleep
+# leaves you locked out. Create the file if the package didn't ship one.
+setup_swaylock_pam() {
+    have swaylock || return 0
+    if [[ -f /etc/pam.d/swaylock ]]; then
+        echo "==> /etc/pam.d/swaylock already present"
+        return 0
+    fi
+    local base
+    if [[ -f /etc/pam.d/system-auth ]]; then base=system-auth
+    elif [[ -f /etc/pam.d/common-auth ]]; then base=common-auth
+    else
+        echo "!! No system-auth/common-auth - configure /etc/pam.d/swaylock by hand." >&2
+        return 0
+    fi
+    echo "==> Creating /etc/pam.d/swaylock (auth include $base)"
+    echo "auth include $base" | $SUDO tee /etc/pam.d/swaylock >/dev/null
+}
+
 install_uv() {
     if have uv; then echo "==> uv already installed"; return; fi
     echo "==> Installing uv (Python runner for widgets)"
@@ -163,7 +183,7 @@ install_config() {
     chmod +x "$CONFIG_DIR"/extras/widgets/launch.sh 2>/dev/null || true
 }
 
-[[ "$DO_DEPS"  -eq 1 ]] && install_packages
+[[ "$DO_DEPS"  -eq 1 ]] && { install_packages; setup_swaylock_pam; }
 [[ "$DO_FONTS" -eq 1 ]] && { install_uv; install_font; }
 install_config
 
