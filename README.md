@@ -19,22 +19,32 @@
 ```bash
 git clone https://github.com/bigtaed-sys/driftwm-config.git
 cd driftwm-config
-./install.sh            # установит конфиг + extras в ~/.config/driftwm
-./install.sh --check    # то же + прогонит `driftwm --check-config`
+./install.sh            # зависимости + шрифт + uv + конфиг (полная установка)
+```
+
+`install.sh` сам определяет пакетный менеджер (pacman/dnf/apt/zypper),
+ставит зависимости (через `sudo`), Nerd Font и `uv`, затем копирует конфиг и
+`extras` в `~/.config/driftwm`. Флаги:
+
+```bash
+./install.sh --config-only   # только конфиг + extras (без root и шрифтов)
+./install.sh --no-deps       # пропустить системные пакеты
+./install.sh --no-fonts      # пропустить Nerd Font / uv
+./install.sh --check         # в конце прогнать `driftwm --check-config`
 ```
 
 Существующий `~/.config/driftwm/config.toml` не затирается молча — делается
-резервная копия `config.toml.bak-<дата>`.
+резервная копия `config.toml.bak-<дата>`. Пакеты, которых нет в репозиториях
+твоего дистрибутива (часто AUR/COPR: `swaync`, `swayosd`,
+`sway-audio-idle-inhibit`), не прерывают установку — они перечисляются в конце.
 
 ## Зависимости (внешние программы)
 
-Конфиг рассчитывает на установленные программы (часть `autostart`/биндингов).
-Доустанови из репозиториев дистрибутива или закомментируй ненужное в
-`~/.config/driftwm/config.toml`:
+`install.sh` пытается поставить их автоматически. Если ставишь вручную:
 
 ```
 waybar swaync fuzzel alacritty swayosd swayidle
-sway-audio-idle-inhibit brightnessctl
+sway-audio-idle-inhibit brightnessctl swaylock grim ffmpeg wlr-randr
 ```
 
 Плюс тема курсора `elementary`. Виджеты `drift-*` требуют `python`/`uv`
