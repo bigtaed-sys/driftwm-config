@@ -5,9 +5,13 @@
 DIR="$(cd "$(dirname "$0")" && pwd)"
 export PATH="$HOME/.local/bin:$PATH"
 
+# Виджеты используют конфиг alacritty из этого райса (Nerd-шрифт для иконок),
+# не затрагивая твой основной ~/.config/alacritty.
+ALACRITTY_CFG="$(cd "$DIR/.." && pwd)/alacritty/alacritty.toml"
+
 launch() {
     local name="$1" cols="$2" lines="$3" script="$4"
-    alacritty --class "drift-${name}" \
+    alacritty --config-file "$ALACRITTY_CFG" --class "drift-${name}" \
         -o "window.dimensions.columns=${cols}" \
         -o "window.dimensions.lines=${lines}" \
         -o "window.padding.x=8" \
@@ -25,7 +29,7 @@ launch weather     22 6  weather_widget.py
 launch notif       21 4  notif_widget.py
 
 # Power button — custom padding to match tray waybar height (28px)
-alacritty --class "drift-power" \
+alacritty --config-file "$ALACRITTY_CFG" --class "drift-power" \
     -o "window.dimensions.columns=3" \
     -o "window.dimensions.lines=1" \
     -o "window.padding.x=5" \

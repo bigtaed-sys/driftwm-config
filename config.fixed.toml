@@ -45,9 +45,15 @@ QT_QPA_PLATFORMTHEME = "qt6ct"
 same_edge = true
 edge_center = true
 
-[input.keyboard]
-layout = "us,ru"
-options = "grp:caps_toggle,grp_led:caps,altwin:ctrl_alt_win"
+# ВНИМАНИЕ: XKB-опции автора (altwin:ctrl_alt_win и т.п.) на некоторых системах
+# ломают keymap так, что отваливается ВСЯ клавиатура, включая переключение TTY,
+# при этом `driftwm --check-config` ошибок не показывает. Поэтому блок
+# закомментирован. Раскомментируй layout, если нужна вторая раскладка; строку
+# options добавляй по одной опции и каждый раз проверяй, что клавиши и
+# Ctrl+Alt+F* (переключение TTY) живы.
+# [input.keyboard]
+# layout = "us,ru"
+# options = "grp:caps_toggle,grp_led:caps,altwin:ctrl_alt_win"
 
 [zoom]
 reset_on_new_window = false
